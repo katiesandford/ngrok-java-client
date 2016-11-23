@@ -51,6 +51,6 @@ public class NgrokTunnel {
     }
         
     public void close() throws IOException, UnirestException {
-        HttpResponse<String> resp = Unirest.delete(ngrokAddr.concat("/api/tunnels/test")).asString();
+        HttpResponse<String> resp = Unirest.delete(ngrokAddr.concat("/api/tunnels/" + this.name)).asString();
     }    
 }
