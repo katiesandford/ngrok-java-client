@@ -20,8 +20,8 @@ public class NgrokTunnel {
     private String url;
     private String name;
     private final String ngrokAddr;
-    
-    public NgrokTunnel(String url, int port) throws UnirestException {
+
+    public NgrokTunnel(String url, String name, int port) throws UnirestException {
         this.name = UUID.randomUUID().toString();
         this.ngrokAddr = url;
         String payload = String.format(
@@ -32,25 +32,37 @@ public class NgrokTunnel {
                     + "\"bind_tls\":\"false\"" +
                 "}"
                 , port, name);
-                
+
         HttpResponse<JsonNode> jsonResponse = Unirest.post(ngrokAddr.concat("/api/tunnels"))
             .header("accept", "application/json")
             .header("Content-Type", "application/json; charset=utf8")
             .body(payload)
             .asJson();
-        
+
         this.url = jsonResponse.getBody().getObject().getString("public_url");
     }
-    
-    public NgrokTunnel(int port) throws UnirestException {        
-        this("http://127.0.0.1:4040", port);        
+
+    public NgrokTunnel(String url, int port) throws UnirestException {
+        this(url, UUID.randomUUID().toString(), port);
     }
-    
+
+    public NgrokTunnel(int port) throws UnirestException {
+        this("http://127.0.0.1:4040", port);
+    }
+
+    public NgrokTunnel(int port, String name) throws UnirestException {
+        this("http://127.0.0.1:4040", name, port);
+    }
+
     public String url() {
         return url;
     }
-        
+
     public void close() throws IOException, UnirestException {
         HttpResponse<String> resp = Unirest.delete(ngrokAddr.concat("/api/tunnels/" + this.name)).asString();
-    }    
+    }
+
+    public static void close(String name) throws UnirestException {
+        HttpResponse<String> resp = Unirest.delete("http://127.0.0.1:4040".concat("/api/tunnels/" + name)).asString();
+    }
 }
