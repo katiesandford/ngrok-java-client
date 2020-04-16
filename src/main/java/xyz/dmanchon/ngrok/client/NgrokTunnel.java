@@ -22,7 +22,7 @@ public class NgrokTunnel {
     private final String ngrokAddr;
 
     public NgrokTunnel(String url, String name, int port) throws UnirestException {
-        this.name = UUID.randomUUID().toString();
+        this.name = name;
         this.ngrokAddr = url;
         String payload = String.format(
                 "{"
